@@ -21,14 +21,12 @@ And one supporting toolbox:
 
 - **Utility Scripts (Python)**: PDF/document indexing pipeline using Gemini + Pinecone + S3.
 
-
 ### 1.1 Repository Layout
 
 - [ai-service/](ai-service/README.md)
 - [app-server/](app-server/README.md)
 - [web-app/](web-app/README.md)
 - [utility-scripts/](utility-scripts/README.md)
-
 
 ---
 
@@ -47,7 +45,6 @@ Suggested diagram content:
 - App Server → Object Storage (S3 / S3Ninja)
 - Utility Scripts → Gemini / Pinecone / S3
 
-
 ### 2.2 Runtime Components
 
 #### A) Web App (React + Vite)
@@ -65,7 +62,6 @@ Suggested diagram content:
 
 - PWA: Non-intrusive offline caching and silent updates (see web app README)
 
-
 #### B) App Server (NestJS)
 
 - Framework: NestJS with Swagger at `/docs`
@@ -75,7 +71,6 @@ Suggested diagram content:
 - AI integration: gRPC client module (`AiBridgeModule`) calling the AI Service
 - Observability: PostHog events for product analytics
 - Usage/Credits: Credit system and usage tracking for AI features
-
 
 #### C) AI Service (Python, gRPC)
 
@@ -88,13 +83,11 @@ Suggested diagram content:
   - Question paper generation: `claexa.ai.QuestionPaperService/Generate`
   - Health check: `claexa.ai.HealthService/Check`
 
-
 #### D) Utility Scripts (Python)
 
 - Batch pipeline for document ingestion:
 
   - PDF processing → summary via Gemini → embeddings → Pinecone → upload PDFs to S3
-
 
 ---
 
@@ -106,20 +99,22 @@ Suggested diagram content:
 2. Web App calls App Server REST endpoint:
 
    - `POST /question-papers/generate-with-ai`
+
 3. App Server validates:
 
    - Firebase auth
    - Authorization policy (CASL-based authorization in server)
    - Usage / credit availability (pre-check)
+
 4. App Server maps the REST payload into the gRPC request schema.
 5. App Server calls AI Service gRPC:
 
    - `claexa.ai.QuestionPaperService/Generate`
+
 6. AI Service generates a structured question paper response.
 7. App Server maps AI response → entities → persists to Postgres.
 8. App Server calculates image count, re-validates credits with context, records usage.
 9. Web App receives `{ id }`, then fetches full paper details by id.
-
 
 ---
 
@@ -145,7 +140,6 @@ Auth:
 
 - All question paper endpoints are guarded by Firebase token guard.
 
-
 ### 4.2 AI Service (gRPC)
 
 Proto package: `claexa.ai`
@@ -160,7 +154,6 @@ gRPC server details:
 - Reflection enabled
 - Max send/receive message length: 64MB
 
-
 ---
 
 ## 5) Data Model Overview (Conceptual)
@@ -172,7 +165,6 @@ gRPC server details:
 - **Question**: text + marks + options + optional sub-questions + optional images
 - **Media**: stored in S3/S3-compatible storage; referenced by IDs (question images)
 - **Usage/Credits**: tracks feature usage and charges
-
 
 ---
 
@@ -189,7 +181,6 @@ Optional:
 
 - `VITE_PUBLIC_POSTHOG_KEY`
 - `VITE_PUBLIC_POSTHOG_HOST`
-
 
 ### 6.2 App Server (NestJS)
 
@@ -235,7 +226,6 @@ Credits:
 - `INITIAL_CREDIT_AMOUNT` (default `100`)
 - `CREDIT_THRESHOLD` (default `50`)
 
-
 ### 6.3 AI Service (Python)
 
 From [ai-service/src/config.py](ai-service/src/config.py) and [ai-service/env.example.txt](ai-service/env.example.txt)
@@ -261,7 +251,6 @@ Pinecone:
 - `PINECONE_API_KEY` (optional)
 - `PINECONE_INDEX_NAME` (optional)
 
-
 ---
 
 ## 7) Local Development
@@ -278,7 +267,6 @@ Health check helper:
 
 - `uv run python scripts/grpc_healthcheck.py` (uses `GRPC_HEALTH_ADDR`, default `localhost:8080`)
 
-
 ### 7.2 Start App Server
 
 From `app-server/`:
@@ -287,6 +275,7 @@ From `app-server/`:
 - Start dev DB + S3 emulator:
 
   - `pnpm run docker:dev:up`
+
 - Run server:
 
   - `pnpm run start:dev`
@@ -294,7 +283,6 @@ From `app-server/`:
 Swagger:
 
 - `http://localhost:3000/docs`
-
 
 ### 7.3 Start Web App
 
@@ -304,7 +292,6 @@ From `web-app/`:
 - Start dev server:
 
   - `pnpm run dev`
-
 
 ---
 
@@ -318,18 +305,15 @@ From `web-app/`:
 
   - The `ai-service/README.md` references a sandbox container approach requiring Docker socket access; ensure the deployment environment supports that if you’re using sandboxed execution.
 
-
 ### 8.2 App Server
 
 - Includes `cloudbuild.yaml` for GCP Cloud Build → Cloud Run deployment.
 - Compose files exist for dev/test (Postgres + S3Ninja; test also builds app container).
 
-
 ### 8.3 Web App
 
 - Vite build output; includes PWA assets and Nginx config.
 - Suitable for static hosting/CDN.
-
 
 ---
 
@@ -343,14 +327,12 @@ From `web-app/`:
   - `.env` files must not be committed.
   - Prefer managed secrets in production (Cloud Run, Railway, etc.).
 
-
 ---
 
 ## 10) Observability
 
 - App Server emits PostHog events (e.g., created/updated/generated question papers).
 - AI Service instruments PydanticAI + HTTPX via Logfire.
-
 
 ---
 
@@ -364,7 +346,6 @@ Suggested (GitHub-friendly) embed pattern:
 [![Claexa Demo](REPLACE_THUMBNAIL_IMAGE_URL)](REPLACE_WITH_LINK)
 ```
 
-
 ---
 
 ## 12) Screenshots (link placeholders)
@@ -373,7 +354,6 @@ Suggested (GitHub-friendly) embed pattern:
 - Dashboard: [REPLACE_WITH_LINK](REPLACE_WITH_LINK)
 - Question Paper Generate: [REPLACE_WITH_LINK](REPLACE_WITH_LINK)
 - Studio Editor: [REPLACE_WITH_LINK](REPLACE_WITH_LINK)
-
 
 ---
 
@@ -388,7 +368,6 @@ Notes:
 
 - Both define `QuestionPaperService` + `HealthService`.
 - The bridge proto also defines `ImageService`.
-
 
 ### B) Common Ports
 
