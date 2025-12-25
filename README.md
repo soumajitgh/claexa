@@ -5,6 +5,12 @@
 This README is a complete technical overview of the Claexa workspace.
 It covers architecture, runtime components, configuration, APIs, data flow, deployment, and operational concerns.
 
+## Demo & Screenshots 🎬
+
+- Demo video: [video link](https://photos.app.goo.gl/Z4Vykj17T8c2RhmC7)
+- Architecture diagram: [REPLACE_WITH_LINK](REPLACE_WITH_LINK)
+- Screenshots: [google photos](https://photos.app.goo.gl/6a3TE5qceKRw3iCN8)
+
 ---
 
 ## 1) What This Project Is
@@ -30,12 +36,11 @@ And one supporting toolbox:
 
 ---
 
-## 2) High-Level Architecture
+## 2) High-Level Architecture 🧭
 
-### 2.1 Diagrams (link placeholders)
+### 2.1 Diagrams
 
-- Architecture diagram: [REPLACE_WITH_LINK](REPLACE_WITH_LINK)
-- Generate-with-AI sequence diagram: [REPLACE_WITH_LINK](REPLACE_WITH_LINK)
+Diagram links are listed at the top under “Demo & Screenshots”.
 
 Suggested diagram content:
 
@@ -253,7 +258,7 @@ Pinecone:
 
 ---
 
-## 7) Local Development
+## 7) Local Development 🧑‍💻
 
 ### 7.1 Start AI Service
 
@@ -295,7 +300,7 @@ From `web-app/`:
 
 ---
 
-## 8) Deployment
+## 8) Deployment 🚀
 
 ### 8.1 AI Service
 
@@ -317,7 +322,7 @@ From `web-app/`:
 
 ---
 
-## 9) Security & Compliance Notes
+## 9) Security & Compliance Notes 🔒
 
 - Authentication is via Firebase ID tokens.
 - App Server enforces authorization with an ability/policy system.
@@ -336,28 +341,7 @@ From `web-app/`:
 
 ---
 
-## 11) Demo Video (link placeholder)
-
-- Demo video: [REPLACE_WITH_LINK](REPLACE_WITH_LINK)
-
-Suggested (GitHub-friendly) embed pattern:
-
-```md
-[![Claexa Demo](REPLACE_THUMBNAIL_IMAGE_URL)](REPLACE_WITH_LINK)
-```
-
----
-
-## 12) Screenshots (link placeholders)
-
-- Login: [REPLACE_WITH_LINK](REPLACE_WITH_LINK)
-- Dashboard: [REPLACE_WITH_LINK](REPLACE_WITH_LINK)
-- Question Paper Generate: [REPLACE_WITH_LINK](REPLACE_WITH_LINK)
-- Studio Editor: [REPLACE_WITH_LINK](REPLACE_WITH_LINK)
-
----
-
-## 13) Appendices
+## 11) Appendices
 
 ### A) gRPC Schemas
 
