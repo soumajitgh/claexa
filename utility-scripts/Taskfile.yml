@@ -1,0 +1,155 @@
+# https://taskfile.dev
+
+version: "3"
+
+vars:
+  PYTHON: python3
+  CONTENT_DIR: content
+
+tasks:
+  default:
+    desc: Show available tasks
+    cmds:
+      - task --list
+    silent: true
+
+  # Main processing tasks
+  process:
+    desc: Run the main document processing pipeline (standard mode)
+    dir: "{{.CONTENT_DIR}}"
+    cmds:
+      - "uv run main.py"
+
+  process:batch:
+    desc: Run the document processing pipeline in batch mode
+    dir: "{{.CONTENT_DIR}}"
+    env:
+      USE_BATCH_PROCESSING: "true"
+    cmds:
+      - "{{.PYTHON}} main.py"
+
+  process:workers:
+    desc: "Run document processing with custom number of workers (usage: task process:workers WORKERS=5)"
+    dir: "{{.CONTENT_DIR}}"
+    env:
+      MAX_WORKERS: '{{.WORKERS | default "3"}}'
+    cmds:
+      - "{{.PYTHON}} main.py"
+
+  # Configuration tasks
+  config:show:
+    desc: Display current configuration settings
+    dir: "{{.CONTENT_DIR}}"
+    cmds:
+      - "{{.PYTHON}} config.py"
+
+  config:validate:
+    desc: Validate environment configuration
+    dir: "{{.CONTENT_DIR}}"
+    cmds:
+      - '{{.PYTHON}} -c ''from config import get_settings; settings = get_settings(); print("✅ Configuration is valid!")'''
+
+  # Danger zone tasks - destructive operations
+  danger:cleanup-bucket:
+    desc: ⚠️  DANGER - Delete ALL objects from S3 bucket (requires confirmation)
+    prompt: This will DELETE ALL objects from the S3 bucket. Are you sure?
+    dir: "{{.CONTENT_DIR}}/danger"
+    cmds:
+      - "{{.PYTHON}} object_bucket_cleanup.py"
+
+  danger:cleanup-vectors:
+    desc: ⚠️  DANGER - Delete ALL vectors from Pinecone index (requires confirmation)
+    prompt: This will DELETE ALL vectors from the Pinecone index. Are you sure?
+    dir: "{{.CONTENT_DIR}}/danger"
+    cmds:
+      - "{{.PYTHON}} vector_store_cleanup.py"
+
+  danger:cleanup-all:
+    desc: ⚠️  DANGER - Delete ALL data from both S3 and Pinecone (requires confirmation)
+    prompt: This will DELETE ALL data from S3 bucket AND Pinecone index. Are you absolutely sure?
+    deps:
+      - danger:cleanup-bucket
+      - danger:cleanup-vectors
+
+  # Utility tasks
+  clean:processed:
+    desc: Remove all files from the processed directory
+    cmds:
+      - rm -rf {{.CONTENT_DIR}}/processed/*
+      - echo "✅ Processed directory cleaned"
+
+  clean:input:
+    desc: Remove all files from the input directory
+    prompt: This will delete all files in the input directory. Continue?
+    cmds:
+      - rm -rf {{.CONTENT_DIR}}/input/*
+      - echo "✅ Input directory cleaned"
+
+  # Development tasks
+  dev:install:
+    desc: Install Python dependencies
+    cmds:
+      - pip install -r requirements.txt || echo "No requirements.txt found"
+      - echo "✅ Dependencies installed"
+
+  dev:lint:
+    desc: Run linting checks (if tools are available)
+    dir: "{{.CONTENT_DIR}}"
+    cmds:
+      - "{{.PYTHON}} -m pylint *.py || echo 'pylint not available'"
+      - "{{.PYTHON}} -m mypy . || echo 'mypy not available'"
+
+  dev:format:
+    desc: Format Python code with black (if available)
+    dir: "{{.CONTENT_DIR}}"
+    cmds:
+      - "{{.PYTHON}} -m black . || echo 'black not available, run: pip install black'"
+
+  # Status and monitoring tasks
+  status:
+    desc: Show processing status and statistics
+    cmds:
+      - echo "📊 Processing Status"
+      - echo "===================="
+      - echo "Input files:" $(ls -1 {{.CONTENT_DIR}}/input 2>/dev/null | wc -l)
+      - echo "Processed files:" $(ls -1 {{.CONTENT_DIR}}/processed 2>/dev/null | wc -l)
+      - echo ""
+      - echo "Recent processed files:"
+      - ls -lt {{.CONTENT_DIR}}/processed | head -n 6
+
+  logs:
+    desc: Show recent log files (if any)
+    cmds:
+      - find {{.CONTENT_DIR}} -name "*.log" -type f -exec tail -n 20 {} \;
+
+  # Help tasks
+  help:
+    desc: Show detailed help information
+    cmds:
+      - echo "📚 Document Processing Utility Scripts"
+      - echo "======================================"
+      - echo ""
+      - echo "Main Tasks:"
+      - echo "  task process              - Run standard document processing"
+      - echo "  task process:batch        - Run with batch processing mode"
+      - echo "  task process:workers      - Run with custom workers (WORKERS=N)"
+      - echo ""
+      - echo "Configuration:"
+      - echo "  task config:show          - Display current configuration"
+      - echo "  task config:validate      - Validate environment setup"
+      - echo ""
+      - echo "⚠️  Danger Zone (Destructive):"
+      - echo "  task danger:cleanup-bucket   - Delete all S3 objects"
+      - echo "  task danger:cleanup-vectors  - Delete all Pinecone vectors"
+      - echo "  task danger:cleanup-all      - Delete everything"
+      - echo ""
+      - echo "Utilities:"
+      - echo "  task clean:processed      - Clear processed directory"
+      - echo "  task status               - Show processing statistics"
+      - echo ""
+      - echo "Development:"
+      - echo "  task dev:install          - Install dependencies"
+      - echo "  task dev:lint             - Run code linting"
+      - echo "  task dev:format           - Format code with black"
+      - echo ""
+      - echo "For more info - task --list"

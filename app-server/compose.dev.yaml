@@ -1,0 +1,38 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: claexa-postgres-dev
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: claexa_dev
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  s3ninja:
+    image: scireum/s3-ninja:latest
+    container_name: claexa-s3ninja-dev
+    environment:
+      - NINJA_MULTIPART_UPLOAD=true
+      - NINJA_BUCKET_AUTO_CREATE=true
+    ports:
+      - '9444:9000'
+    volumes:
+      - s3ninja_data_dev:/home/sirius/data
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:9000/']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  postgres_data_dev:
+  s3ninja_data_dev:

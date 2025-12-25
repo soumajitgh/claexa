@@ -1,0 +1,14 @@
+[project]
+name = "claexa-scripts"
+version = "0.1.2"
+description = "utility scripts of claexa AI"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "boto3>=1.39.14",
+    "google-genai>=1.27.0",
+    "pathlib>=1.0.1",
+    "pydantic>=2.11.7",
+    "pydantic-settings>=2.10.1",
+    "pinecone>=3.0.0",
+]

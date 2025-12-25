@@ -1,0 +1,67 @@
+name: Reset Staging Database
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  reset-database:
+    name: Reset Staging Database
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup PostgreSQL Client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Clear Database
+        run: |
+          # Extract database connection details from DATABASE_URL
+          DB_URL="${{ secrets.STAGING_DATABASE_URL }}"
+
+          # Drop all tables and sequences
+          PGPASSWORD=$(echo $DB_URL | sed -n 's/.*:\([^@]*\)@.*/\1/p') \
+          psql $DB_URL -c "
+            DO \$\$ DECLARE
+              r RECORD;
+            BEGIN
+              -- Drop all tables
+              FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
+                EXECUTE 'DROP TABLE IF EXISTS ' || quote_ident(r.tablename) || ' CASCADE';
+              END LOOP;
+              
+              -- Drop all sequences
+              FOR r IN (SELECT sequence_name FROM information_schema.sequences WHERE sequence_schema = 'public') LOOP
+                EXECUTE 'DROP SEQUENCE IF EXISTS ' || quote_ident(r.sequence_name) || ' CASCADE';
+              END LOOP;
+              
+              -- Drop all user-defined functions (exclude extension functions)
+              FOR r IN (
+                SELECT proname, oidvectortypes(proargtypes) as argtypes 
+                FROM pg_proc 
+                INNER JOIN pg_namespace ON pg_proc.pronamespace = pg_namespace.oid 
+                WHERE pg_namespace.nspname = 'public' 
+                AND NOT EXISTS (
+                  SELECT 1 FROM pg_depend 
+                  WHERE pg_depend.objid = pg_proc.oid 
+                  AND pg_depend.deptype = 'e'
+                )
+              ) LOOP
+                EXECUTE 'DROP FUNCTION IF EXISTS ' || quote_ident(r.proname) || '(' || r.argtypes || ') CASCADE';
+              END LOOP;
+              
+              -- Drop all types
+              FOR r IN (SELECT typname FROM pg_type INNER JOIN pg_namespace ON pg_type.typnamespace = pg_namespace.oid WHERE pg_namespace.nspname = 'public' AND typtype = 'c') LOOP
+                EXECUTE 'DROP TYPE IF EXISTS ' || quote_ident(r.typname) || ' CASCADE';
+              END LOOP;
+            END \$\$;"
+        env:
+          DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}

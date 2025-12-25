@@ -1,0 +1,91 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: claexa-postgres-test
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: claexa_test
+    ports:
+      - "5433:5432" # Use different port to avoid conflict with dev
+    volumes:
+      - postgres_data_test:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  s3ninja:
+    image: scireum/s3-ninja:latest
+    container_name: claexa-s3ninja-test
+    environment:
+      - NINJA_MULTIPART_UPLOAD=true
+      - NINJA_BUCKET_AUTO_CREATE=true
+    ports:
+      - "9445:9000" # Different port
+    volumes:
+      - s3ninja_data_test:/home/sirius/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      platforms:
+        - linux/amd64
+    container_name: claexa-app-test
+    ports:
+      - "3001:3000"
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+      s3ninja:
+        condition: service_healthy
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      # Database Configuration
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=claexa_test
+      # AWS S3 Configuration (optional in non-production)
+      - AWS_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
+      - AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+      - AWS_S3_BUCKET_NAME=claexa-test
+      # AI Service Configuration
+      - AI_SERVICE_URL=ai-service-reverse-proxy.up.railway.app
+      - AI_SERVICE_TLS=true
+      # Payment Gateway Configuration
+      - CASHFREE_APP_ID=test-app-id
+      - CASHFREE_SECRET_KEY=test-secret-key
+      # Credit System Configuration
+      - INITIAL_CREDIT_AMOUNT=100
+      - CREDIT_THRESHOLD=50
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--quiet",
+          "--tries=1",
+          "--spider",
+          "http://localhost:3000/health",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  postgres_data_test:
+  s3ninja_data_test:

@@ -1,0 +1,16 @@
+{
+  "projects": {
+    "default": "dev-claexa-ai",
+    "staging": "dev-claexa-ai"
+  },
+  "targets": {
+    "dev-claexa-ai": {
+      "hosting": {
+        "staging": [
+          "dev-claexa-ai"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

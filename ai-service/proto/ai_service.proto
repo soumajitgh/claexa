@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+package claexa.ai;
+
+// Question Paper Service
+service QuestionPaperService {
+  rpc Generate (QuestionPaperGenerateRequest) returns (QuestionPaperGenerateResponse) {}
+}
+
+message SubQuestionSchemaItem {
+  string type = 1;
+  int32 count = 2;
+  int32 marks_each = 3;
+  int32 bloom_level = 4; // 0 when not provided
+}
+
+message QuestionSchemaItem {
+  string type = 1;
+  int32 count = 2;
+  int32 marks_each = 3;
+  bool image_required = 4;
+  string difficulty = 5; // easy|medium|hard
+  int32 bloom_level = 6; // 0 when not provided
+  repeated string filtered_topics = 7;
+  repeated SubQuestionSchemaItem sub_questions = 8;
+}
+
+message QuestionPaperGenerateRequest {
+  string course = 1;
+  string audience = 2;
+  repeated string topics = 3;
+  repeated string user_reference_media_urls = 4;
+  repeated QuestionSchemaItem item_schema = 5;
+}
+
+// Domain models mirrored for response
+message QuestionOption { string text = 1; }
+
+message QuestionImage { string base64_image = 1; }
+
+message SubQuestion {
+  string text = 1;
+  int32 marks = 2;
+  repeated QuestionOption options = 3;
+}
+
+message Question {
+  string text = 1;
+  int32 marks = 2;
+  int32 bloom_level = 3;
+  repeated QuestionOption options = 4;
+  repeated QuestionImage images = 5;
+  repeated SubQuestion sub_questions = 6;
+}
+
+message QuestionPaper { 
+  string name = 1; 
+  repeated Question questions = 2; 
+}
+
+message QuestionPaperGenerateResponse { 
+  QuestionPaper question_paper = 1; 
+}
+
+
+// Health Check Service
+service HealthService {
+  rpc Check (HealthCheckRequest) returns (HealthCheckResponse) {}
+}
+
+message HealthCheckRequest {
+  // Optional: specific service name to check; empty means overall health
+  string service = 1;
+}
+
+message HealthCheckResponse {
+  enum ServingStatus {
+    UNKNOWN = 0;
+    SERVING = 1;
+    NOT_SERVING = 2;
+    SERVICE_UNKNOWN = 3;
+  }
+  ServingStatus status = 1;
+}
+

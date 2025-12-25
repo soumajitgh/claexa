@@ -1,0 +1,18 @@
+node_modules
+
+# IntelliJ project files
+.idea
+
+#Build files
+dist
+
+# Keep environment variables out of version control
+.env
+.env.*
+
+# Dev container logs and temporary files
+.devcontainer/.log
+.devcontainer/devcontainer.env
+
+
+.cache

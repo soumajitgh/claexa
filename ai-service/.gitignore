@@ -1,0 +1,19 @@
+# Pyton Specific
+.venv
+
+# IDE Specific
+.idea
+
+# External Tools
+poetry.lock
+
+# Environment Variables
+.env
+
+# Generated Files
+grpc_gen
+
+# Temporary render directories
+.temp_renders
+
+**__pycache__**

@@ -1,0 +1,291 @@
+/* ===================================
+   Question Paper PDF Stylesheet
+   =================================== */
+
+/* --- 1. Page Configuration --- */
+@page {
+  /* Set paper size to A4 */
+  size: A4;
+
+  /* Narrow margins for more content space */
+  margin-top: 0.5in;
+  margin-bottom: 0.5in;
+  margin-left: 0.5in;
+  margin-right: 0.5in;
+}
+
+/* --- 2. Reset and Base Styles --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  font-size: 11pt;
+  line-height: 1.4;
+  color: #000;
+  background-color: #fff;
+}
+
+/* --- 3. Header Styles --- */
+h1 {
+  font-size: 16pt;
+  text-align: center;
+  margin-bottom: 10px;
+  font-weight: bold;
+  page-break-after: avoid;
+}
+
+h6 {
+  margin: 0;
+  display: inline;
+  font-size: 10pt;
+  font-weight: normal;
+}
+
+/* --- 4. Header Information Section --- */
+.header-info {
+  width: 100%;
+  margin-bottom: 10px;
+  display: table;
+}
+
+.header-info-row {
+  display: table-row;
+}
+
+.header-info-left {
+  display: table-cell;
+  text-align: left;
+  width: 50%;
+}
+
+.header-info-right {
+  display: table-cell;
+  text-align: right;
+  width: 50%;
+}
+
+.separator {
+  border: none;
+  border-bottom: 2px solid #000;
+  margin-bottom: 15px;
+  page-break-after: avoid;
+}
+
+/* --- 5. Questions Table --- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 10px;
+  page-break-inside: auto;
+}
+
+thead {
+  display: table-header-group;
+}
+
+tbody {
+  display: table-row-group;
+}
+
+th,
+td {
+  border: 1px solid #000;
+  padding: 8px;
+  vertical-align: top;
+  font-size: 10pt;
+}
+
+th {
+  background-color: #f0f0f0;
+  font-weight: bold;
+  text-align: center;
+  page-break-after: avoid;
+}
+
+/* Column widths */
+.col-slno {
+  width: 8%;
+  text-align: center;
+}
+
+.col-question {
+  width: 82%;
+  text-align: left;
+}
+
+.col-marks {
+  width: 10%;
+  text-align: center;
+}
+
+/* --- 6. Question Row Styles --- */
+tr {
+  page-break-inside: avoid;
+  page-break-after: auto;
+}
+
+/* Avoid breaking after table header */
+thead tr {
+  page-break-after: avoid;
+}
+
+/* --- 7. Question Content Styles --- */
+.question-content {
+  padding: 4px 0;
+}
+
+.question-text {
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+/* --- 8. Question Images --- */
+.question-images {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  page-break-inside: avoid;
+}
+
+.question-image {
+  max-width: 100%;
+  max-height: 300px;
+  height: auto;
+  display: block;
+  margin: 5px 0;
+  border: 1px solid #ddd;
+  padding: 2px;
+}
+
+/* --- 9. Options Styles --- */
+.options {
+  margin-left: 20px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.option {
+  margin-bottom: 5px;
+  line-height: 1.4;
+  display: flex;
+  align-items: flex-start;
+}
+
+.option-label {
+  font-weight: bold;
+  margin-right: 5px;
+  min-width: 20px;
+}
+
+.option-text {
+  flex: 1;
+  display: inline;
+}
+
+/* --- 10. Subquestions Styles --- */
+.subquestions {
+  margin-left: 20px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  page-break-inside: avoid;
+}
+
+.subquestion {
+  margin-bottom: 10px;
+  padding-left: 5px;
+}
+
+.subquestion-label {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.subquestion-text {
+  display: inline;
+  line-height: 1.5;
+}
+
+/* Subquestion options */
+.subquestion .options {
+  margin-left: 15px;
+  margin-top: 5px;
+}
+
+/* --- 11. Markdown Content --- */
+.markdown {
+  display: inline;
+}
+
+.markdown p {
+  margin: 0;
+  display: inline;
+}
+
+/* --- 12. Print-specific Rules --- */
+@media print {
+  /* Ensure colors are preserved */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Avoid breaking inside important elements */
+  .question-images,
+  .subquestions,
+  .options {
+    page-break-inside: avoid;
+  }
+
+  /* Keep table rows together when possible */
+  tr {
+    page-break-inside: avoid;
+  }
+}
+
+/* --- 13. Responsive Adjustments --- */
+@page :first {
+  margin-top: 0.75in;
+}
+
+/* --- 14. Code and Special Content --- */
+code,
+pre {
+  font-family: 'Courier New', monospace;
+  font-size: 9pt;
+  background-color: #f5f5f5;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+pre {
+  padding: 8px;
+  border: 1px solid #ddd;
+  page-break-inside: avoid;
+}
+
+/* --- 15. Strong and Emphasis --- */
+strong,
+b {
+  font-weight: bold;
+}
+
+em,
+i {
+  font-style: italic;
+}
+
+/* --- 16. Lists (if any in questions) --- */
+ul,
+ol {
+  margin-left: 20px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+li {
+  margin-bottom: 3px;
+  line-height: 1.4;
+}

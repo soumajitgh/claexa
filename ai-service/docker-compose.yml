@@ -1,0 +1,18 @@
+services:
+  claexa-ai-service:
+    build:
+      context: .
+    container_name: claexa-ai-service
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      - ENV=production
+    volumes:
+      - ./logs:/app/logs
+    privileged: true
+
+networks:
+  default:
+    driver: bridge

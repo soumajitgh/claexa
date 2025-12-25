@@ -1,0 +1,23 @@
+# Allow direct access to files in the .well-known directory
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  
+  # Don't rewrite requests for .well-known directory
+  RewriteCond %{REQUEST_URI} !^/\.well-known
+  
+  # Rewrite all other requests to index.html for SPA routing
+  RewriteRule ^ index.html [QSA,L]
+</IfModule>
+
+# Ensure proper content type for JSON files
+<IfModule mod_mime.c>
+  AddType application/json .json
+</IfModule>
+
+# Set headers for .well-known/assetlinks.json
+<FilesMatch "^assetlinks\.json$">
+  <IfModule mod_headers.c>
+    Header set Content-Type "application/json"
+    Header set Cache-Control "public, max-age=14400"
+  </IfModule>
+</FilesMatch>

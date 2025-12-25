@@ -1,0 +1,10 @@
+.venv
+.vscode
+
+**/input/**
+**/processed/**
+__pycache__
+
+.env
+.env.*
+
