@@ -8,7 +8,6 @@ It covers architecture, runtime components, configuration, APIs, data flow, depl
 ## Demo & Screenshots 🎬
 
 - Demo video: [video link](https://photos.app.goo.gl/Z4Vykj17T8c2RhmC7)
-- Architecture diagram: [REPLACE_WITH_LINK](REPLACE_WITH_LINK)
 - Screenshots: [google photos](https://photos.app.goo.gl/6a3TE5qceKRw3iCN8)
 
 ---
